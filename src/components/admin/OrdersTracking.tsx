@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { collection, getDocs, updateDoc, doc, query, orderBy, Timestamp } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, deleteDoc, query, orderBy, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 
 interface OrderItem {
