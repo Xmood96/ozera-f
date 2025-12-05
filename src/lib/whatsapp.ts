@@ -1,4 +1,5 @@
-import type { OrderItem } from "./firestore";
+import type { OrderItem, PaymentMethod } from "./firestore";
+import { PAYMENT_METHODS } from "../types";
 
 /**
  * Generate a WhatsApp message from order data
@@ -7,6 +8,7 @@ import type { OrderItem } from "./firestore";
  * @param customerPhone - Customer phone number
  * @param deliveryAddress - Delivery address
  * @param orderId - Order ID from Firebase
+ * @param paymentMethod - Payment method for the order
  * @returns Formatted message string for WhatsApp
  */
 export function generateOrderMessage(
@@ -14,7 +16,8 @@ export function generateOrderMessage(
   totalAmount: number,
   customerPhone: string,
   deliveryAddress: string,
-  orderId: string
+  orderId: string,
+  paymentMethod: PaymentMethod = "cod"
 ): string {
   const itemsList = items
     .map(
@@ -24,6 +27,9 @@ export function generateOrderMessage(
         } ج.م`
     )
     .join("\n\n");
+
+  const paymentLabel = PAYMENT_METHODS[paymentMethod]?.label || "الدفع عند الاستلام";
+  const paymentEmoji = PAYMENT_METHODS[paymentMethod]?.emoji || "🚚";
 
   const message = `
 🛍️ *طلب جديد من OZERA*
@@ -40,8 +46,10 @@ ${itemsList}
 
 💰 *الإجمالي:* *${totalAmount} ج.م*
 
+${paymentEmoji} *طريقة الدفع:* ${paymentLabel}
+
 ━━━━━━━━━━━━━
-تم استلام الطلب عبر *تطبيق OZERA*  
+تم استلام الطلب عبر *تطبيق OZERA*
 نشكر ثقتك بنا ✨
   `.trim();
 
