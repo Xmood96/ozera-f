@@ -71,6 +71,9 @@ export async function getProducts(categoryId?: string): Promise<Product[]> {
         discount: data.discount,
         imageUrl: data.imageUrl,
         categoryId: data.categoryId,
+        benefits: data.benefits || [],
+        usageInstructions: data.usageInstructions || "",
+        ingredients: data.ingredients || [],
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       };
