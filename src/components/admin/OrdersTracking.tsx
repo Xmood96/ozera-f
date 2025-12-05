@@ -151,6 +151,40 @@ export default function OrdersTracking() {
     }
   };
 
+  const handleDeleteOrder = async () => {
+    if (!selectedOrder || !isMountedRef.current) return;
+
+    if (!confirm(`هل أنت متأكد من حذف الطلب #${selectedOrder.id.slice(0, 8).toUpperCase()}؟ لا يمكن التراجع عن هذا الإجراء.`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const orderRef = doc(db, "orders", selectedOrder.id);
+      await deleteDoc(orderRef);
+
+      if (isMountedRef.current) {
+        await loadOrders();
+        setSelectedOrder(null);
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      // Handle AbortError gracefully
+      if (error instanceof Error && error.name === "AbortError") {
+        console.debug("Order delete was aborted (expected on unmount)");
+        return;
+      }
+
+      if (isMountedRef.current) {
+        console.error("Error deleting order:", error);
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setIsDeleting(false);
+      }
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
