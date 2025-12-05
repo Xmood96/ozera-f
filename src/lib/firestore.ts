@@ -101,6 +101,7 @@ export async function saveOrder(order: Order): Promise<string> {
       status: "pending",
       customerPhone: order.customerPhone,
       deliveryAddress: order.deliveryAddress,
+      paymentMethod: order.paymentMethod || "cod",
     });
     return docRef.id;
   } catch (error) {
