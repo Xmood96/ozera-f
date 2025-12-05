@@ -55,12 +55,29 @@ ${itemsList}
 export function redirectToWhatsApp(message: string, adminPhoneNumber: string = "209546481125"): void {
   // Ensure phone number format (remove + if present, keep only digits)
   const formattedPhone = adminPhoneNumber.replace(/\D/g, "");
-  
+
   // WhatsApp Web API link
   const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
-  
-  // Open in new tab
-  window.open(whatsappUrl, "_blank");
+
+  // Detect if running on iOS Safari
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  const isIOSSafari = isIOS && isSafari;
+
+  // Use location.href for iOS Safari (more reliable), window.open for others
+  if (isIOSSafari) {
+    // For iOS Safari, use location.href which is more reliable
+    window.location.href = whatsappUrl;
+  } else {
+    // For other browsers, use window.open with a small delay to ensure execution
+    setTimeout(() => {
+      const newWindow = window.open(whatsappUrl, "_blank");
+      // Fallback in case window.open is blocked
+      if (!newWindow) {
+        window.location.href = whatsappUrl;
+      }
+    }, 0);
+  }
 }
 
 /**
