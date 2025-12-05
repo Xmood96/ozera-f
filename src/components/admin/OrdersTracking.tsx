@@ -129,6 +129,7 @@ export default function OrdersTracking() {
       await updateDoc(orderRef, {
         customerPhone: editedPhone,
         deliveryAddress: editedAddress,
+        paymentMethod: editedPaymentMethod,
       });
 
       if (isMountedRef.current) {
