@@ -49,3 +49,28 @@ export interface Cart {
   totalPrice: number;       // المجموع الكلي
   updatedAt: number;        // آخر تحديث
 }
+
+/* ========== طرق الدفع ========== */
+export type PaymentMethod = "cod" | "instapay" | "wallet";
+
+/* ========== تفاصيل طرق الدفع ========== */
+export const PAYMENT_METHODS = {
+  cod: {
+    id: "cod",
+    label: "الدفع عند الاستلام",
+    emoji: "🚚",
+    description: "ادفع عند استلام الطلب"
+  },
+  instapay: {
+    id: "instapay",
+    label: "الدفع إنستا باي",
+    emoji: "💳",
+    description: "ادفع عبر تطبيق إنستا باي"
+  },
+  wallet: {
+    id: "wallet",
+    label: "المحافظ الإلكترونية",
+    emoji: "📱",
+    description: "ادفع عبر المحافظ الإلكترونية"
+  }
+} as const;
