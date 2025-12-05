@@ -104,6 +104,7 @@ export function sendOrderToWhatsApp(
   customerPhone: string,
   deliveryAddress: string,
   orderId: string,
+  paymentMethod: PaymentMethod = "cod",
   adminPhoneNumber: string = "201271772724"
 ): void {
   const message = generateOrderMessage(
@@ -111,7 +112,8 @@ export function sendOrderToWhatsApp(
     totalAmount,
     customerPhone,
     deliveryAddress,
-    orderId
+    orderId,
+    paymentMethod
   );
   redirectToWhatsApp(message, adminPhoneNumber);
 }
