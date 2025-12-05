@@ -28,12 +28,20 @@ export default function CartDrawer({
   const totalPrice = items.reduce((sum, item) => sum + item.total, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleCheckout = () => {
+  const handleContinueToPayment = () => {
     if (phone.trim() && deliveryAddress.trim()) {
-      onCheckout(phone, deliveryAddress);
+      setIsPaymentMode(true);
+    }
+  };
+
+  const handleConfirmPayment = () => {
+    if (phone.trim() && deliveryAddress.trim()) {
+      onCheckout(phone, deliveryAddress, paymentMethod);
       setIsCheckoutMode(false);
+      setIsPaymentMode(false);
       setPhone("");
       setDeliveryAddress("");
+      setPaymentMethod("cod");
     }
   };
 
