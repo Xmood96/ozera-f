@@ -621,10 +621,26 @@ export default function OrdersTracking() {
                   </select>
                 </div>
 
-                <div className="modal-action gap-2">
+                <div className="modal-action gap-2 flex flex-wrap">
+                  <button
+                    type="button"
+                    onClick={handleDeleteOrder}
+                    disabled={isDeleting}
+                    className="btn btn-error btn-sm rounded-lg text-white"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <span className="loading loading-spinner loading-sm" />
+                        جاري الحذف...
+                      </>
+                    ) : (
+                      "🗑️ حذف الطلب"
+                    )}
+                  </button>
                   <button
                     type="button"
                     onClick={handleEditOrder}
+                    disabled={isDeleting}
                     className="btn btn-secondary rounded-lg"
                   >
                     ✏️ تعديل البيانات
@@ -635,6 +651,7 @@ export default function OrdersTracking() {
                       setIsModalOpen(false);
                       setSelectedOrder(null);
                     }}
+                    disabled={isDeleting}
                     className="btn btn-outline rounded-lg"
                   >
                     إغلاق
