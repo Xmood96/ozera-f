@@ -1,5 +1,6 @@
 import { useState } from "react";
-import type { CartItem } from "../types";
+import type { CartItem, PaymentMethod } from "../types";
+import { PAYMENT_METHODS } from "../types";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -7,7 +8,7 @@ interface CartDrawerProps {
   onClose: () => void;
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemoveItem: (productId: string) => void;
-  onCheckout: (phone: string, deliveryAddress: string) => void;
+  onCheckout: (phone: string, deliveryAddress: string, paymentMethod: PaymentMethod) => void;
 }
 
 export default function CartDrawer({
@@ -19,8 +20,10 @@ export default function CartDrawer({
   onCheckout,
 }: CartDrawerProps) {
   const [isCheckoutMode, setIsCheckoutMode] = useState(false);
+  const [isPaymentMode, setIsPaymentMode] = useState(false);
   const [phone, setPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
 
   const totalPrice = items.reduce((sum, item) => sum + item.total, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
