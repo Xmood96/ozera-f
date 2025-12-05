@@ -29,6 +29,7 @@ export default function OrdersTracking() {
   const [editedPhone, setEditedPhone] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [phoneFilter, setPhoneFilter] = useState<string>("");
