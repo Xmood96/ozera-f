@@ -207,7 +207,8 @@ export default function HomePage() {
           totalAmount,
           customerPhone,
           deliveryAddress,
-          orderId // ⬅️ تمرير الـ Order ID هنا
+          orderId,
+          paymentMethod
         );
       }, 1200);
     } catch (error) {
