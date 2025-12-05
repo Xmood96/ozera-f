@@ -174,7 +174,7 @@ export default function CartDrawer({
                   </button>
                 </div>
               </>
-            ) : (
+            ) : !isPaymentMode ? (
               <>
                 <div className="checkout-form p-4 space-y-3">
                   <div className="form-group">
@@ -213,15 +213,74 @@ export default function CartDrawer({
                   </div>
 
                   <button
-                    onClick={handleCheckout}
+                    onClick={handleContinueToPayment}
                     disabled={!phone.trim() || !deliveryAddress.trim()}
+                    className="btn btn-primary w-full rounded-lg"
+                  >
+                    المتابعة إلى طريقة الدفع
+                  </button>
+
+                  <button
+                    onClick={() => setIsCheckoutMode(false)}
+                    className="btn btn-outline w-full rounded-lg"
+                  >
+                    العودة
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="payment-form p-4 space-y-4">
+                  <div>
+                    <p className="text-sm opacity-75 mb-2">📞 الهاتف:</p>
+                    <p className="font-semibold" dir="ltr">{phone}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm opacity-75 mb-2">📍 العنوان:</p>
+                    <p className="font-semibold">{deliveryAddress}</p>
+                  </div>
+
+                  <div className="checkout-summary bg-base-200 rounded-lg p-3 mb-4">
+                    <p className="text-sm opacity-75 mb-1">الإجمالي:</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {totalPrice.toFixed(2)} ج.م
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="label-text block text-sm font-semibold mb-3">💳 طريقة الدفع</label>
+                    <div className="space-y-2">
+                      {(Object.keys(PAYMENT_METHODS) as Array<PaymentMethod>).map((method) => (
+                        <label key={method} className="payment-option flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-all"
+                          style={{borderColor: paymentMethod === method ? "rgb(79, 70, 229)" : "rgb(209, 213, 219)"}}
+                        >
+                          <input
+                            type="radio"
+                            name="payment-method"
+                            value={method}
+                            checked={paymentMethod === method}
+                            onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                            className="radio"
+                          />
+                          <div className="flex-1">
+                            <p className="font-semibold">{PAYMENT_METHODS[method].emoji} {PAYMENT_METHODS[method].label}</p>
+                            <p className="text-xs opacity-75">{PAYMENT_METHODS[method].description}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleConfirmPayment}
                     className="btn btn-primary w-full rounded-lg"
                   >
                     تأكيد الطلب
                   </button>
 
                   <button
-                    onClick={() => setIsCheckoutMode(false)}
+                    onClick={() => setIsPaymentMode(false)}
                     className="btn btn-outline w-full rounded-lg"
                   >
                     العودة
