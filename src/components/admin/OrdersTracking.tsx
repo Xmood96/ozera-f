@@ -29,6 +29,7 @@ export default function OrdersTracking() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedPhone, setEditedPhone] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
+  const [editedPaymentMethod, setEditedPaymentMethod] = useState<"cod" | "instapay" | "wallet">("cod");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
