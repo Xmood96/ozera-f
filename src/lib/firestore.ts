@@ -25,6 +25,7 @@ export interface Order {
   status: "pending" | "paid" | "in_delivery" | "completed" | "cancelled";
   customerPhone?: string;
   deliveryAddress?: string;
+  paymentMethod?: "cod" | "instapay" | "wallet";
 }
 
 // Fetch all categories
