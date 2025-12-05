@@ -698,6 +698,19 @@ export default function OrdersTracking() {
                       rows={4}
                     />
                   </div>
+
+                  <div className="form-group">
+                    <label className="label-text block text-sm font-semibold mb-2">💳 طريقة الدفع</label>
+                    <select
+                      value={editedPaymentMethod}
+                      onChange={(e) => setEditedPaymentMethod(e.target.value as "cod" | "instapay" | "wallet")}
+                      className="select select-bordered w-full"
+                    >
+                      <option value="cod">🚚 الدفع عند الاستلام</option>
+                      <option value="instapay">💳 الدفع إنستا باي</option>
+                      <option value="wallet">📱 المحافظ الإلكترونية</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="modal-action gap-2">
