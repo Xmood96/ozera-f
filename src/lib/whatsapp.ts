@@ -1,4 +1,5 @@
-import type { OrderItem, PaymentMethod } from "./firestore";
+import type { OrderItem } from "./firestore";
+import type { PaymentMethod } from "../types";
 import { PAYMENT_METHODS } from "../types";
 
 /**
