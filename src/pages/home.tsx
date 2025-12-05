@@ -163,7 +163,8 @@ export default function HomePage() {
   // Handle checkout
   const handleCheckout = async (
     customerPhone: string,
-    deliveryAddress: string
+    deliveryAddress: string,
+    paymentMethod: "cod" | "instapay" | "wallet"
   ) => {
     if (cartItems.length === 0) return;
 
@@ -186,6 +187,7 @@ export default function HomePage() {
         status: "pending",
         customerPhone,
         deliveryAddress,
+        paymentMethod,
       });
 
       // Clear cart and close drawer
