@@ -115,6 +115,7 @@ export default function OrdersTracking() {
     if (selectedOrder) {
       setEditedPhone(selectedOrder.customerPhone || "");
       setEditedAddress(selectedOrder.deliveryAddress || "");
+      setEditedPaymentMethod(selectedOrder.paymentMethod || "cod");
       setIsEditMode(true);
     }
   };
