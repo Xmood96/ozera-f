@@ -566,10 +566,21 @@ export default function OrdersTracking() {
                     <p className="font-semibold text-lg leading-relaxed">{selectedOrder.deliveryAddress || "لم يتم إدخاله"}</p>
                   </div>
 
-                  <div className="info-box bg-base-200 rounded-lg p-4">
-                    <p className="text-sm opacity-70 mb-2">حالة الطلب</p>
-                    <div className="flex flex-wrap gap-2">
-                      {getStatusBadge(selectedOrder.status)}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="info-box bg-base-200 rounded-lg p-4">
+                      <p className="text-sm opacity-70 mb-1">💳 طريقة الدفع</p>
+                      <p className="font-semibold text-lg">
+                        {selectedOrder.paymentMethod === "cod" ? "🚚 الدفع عند الاستلام" :
+                         selectedOrder.paymentMethod === "instapay" ? "💳 الدفع إنستا باي" :
+                         selectedOrder.paymentMethod === "wallet" ? "📱 المحافظ الإلكترونية" :
+                         "لم يتم تحديدها"}
+                      </p>
+                    </div>
+                    <div className="info-box bg-base-200 rounded-lg p-4">
+                      <p className="text-sm opacity-70 mb-2">حالة الطلب</p>
+                      <div className="flex flex-wrap gap-2">
+                        {getStatusBadge(selectedOrder.status)}
+                      </div>
                     </div>
                   </div>
                 </div>
