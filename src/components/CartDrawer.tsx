@@ -149,8 +149,9 @@ export default function CartDrawer({
                   </div>
 
                   <div className="shipping-info bg-info/10 border border-info/30 rounded-lg p-3 text-sm">
-                    <p className="text-info-content">
-                      💚 <span className="font-semibold">ملاحظة:</span> سيتم إضافة سعر الشحن حسب المكان في الخطوة القادمة
+                    <p className="text-accent">
+                      💚 <span className="font-semibold">ملاحظة:</span> سيتم
+                      إضافة سعر الشحن حسب المكان في الخطوة القادمة
                     </p>
                   </div>
 
@@ -158,7 +159,7 @@ export default function CartDrawer({
                     onClick={() => setIsCheckoutMode(true)}
                     className="btn btn-primary w-full rounded-lg"
                   >
-                   تأكيد الطلب
+                    تأكيد الطلب
                   </button>
                 </div>
               </>

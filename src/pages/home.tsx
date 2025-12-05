@@ -1,7 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import type { Product, CartItem, Category } from "../types";
-import { getCategories, getProducts, saveOrder, type OrderItem } from "../lib/firestore";
+import {
+  getCategories,
+  getProducts,
+  saveOrder,
+  type OrderItem,
+} from "../lib/firestore";
 import { Timestamp } from "firebase/firestore";
 import { sendOrderToWhatsApp } from "../lib/whatsapp";
 import HeroSection from "../components/HeroSection";
@@ -17,11 +22,17 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [cartItems, setCartItems] = useLocalStorage<CartItem[]>("ozera-cart", []);
+  const [cartItems, setCartItems] = useLocalStorage<CartItem[]>(
+    "ozera-cart",
+    []
+  );
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [theme, setTheme] = useLocalStorage<"oliva-light" | "oliva-dark">("ozera-theme", "oliva-light");
+  const [theme, setTheme] = useLocalStorage<"oliva-light" | "oliva-dark">(
+    "ozera-theme",
+    "oliva-light"
+  );
 
   const productsRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +55,9 @@ export default function HomePage() {
       } catch (error) {
         // Handle AbortError gracefully - occurs when component unmounts during query
         if (error instanceof Error && error.name === "AbortError") {
-          console.debug("Home page data query was aborted (expected on unmount)");
+          console.debug(
+            "Home page data query was aborted (expected on unmount)"
+          );
           return;
         }
         console.error("Error loading data:", error);
@@ -54,8 +67,7 @@ export default function HomePage() {
     };
 
     loadInitialData();
-
-    }, []);
+  }, []);
 
   // Handle category selection
   const handleCategorySelect = async (categoryId: string) => {
@@ -63,12 +75,16 @@ export default function HomePage() {
     setIsLoading(true);
 
     try {
-      const productsData = await getProducts(categoryId === "all" ? undefined : categoryId);
+      const productsData = await getProducts(
+        categoryId === "all" ? undefined : categoryId
+      );
       setProducts(productsData);
     } catch (error) {
       // Handle AbortError gracefully - occurs when component unmounts during query
       if (error instanceof Error && error.name === "AbortError") {
-        console.debug("Products filter query was aborted (expected on unmount)");
+        console.debug(
+          "Products filter query was aborted (expected on unmount)"
+        );
         return;
       }
       console.error("Error loading products:", error);
@@ -85,13 +101,19 @@ export default function HomePage() {
   // Handle add to cart
   const handleAddToCart = (product: Product, quantity: number = 1) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.productId === product.id);
+      const existingItem = prevItems.find(
+        (item) => item.productId === product.id
+      );
 
       if (existingItem) {
         const newQuantity = existingItem.quantity + quantity;
         return prevItems.map((item) =>
           item.productId === product.id
-            ? { ...item, quantity: newQuantity, total: item.price * newQuantity }
+            ? {
+                ...item,
+                quantity: newQuantity,
+                total: item.price * newQuantity,
+              }
             : item
         );
       }
@@ -133,68 +155,69 @@ export default function HomePage() {
 
   // Handle remove item
   const handleRemoveItem = (productId: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.productId !== productId));
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.productId !== productId)
+    );
   };
 
   // Handle checkout
- const handleCheckout = async (
-  customerPhone: string,
-  deliveryAddress: string
-) => {
-  if (cartItems.length === 0) return;
+  const handleCheckout = async (
+    customerPhone: string,
+    deliveryAddress: string
+  ) => {
+    if (cartItems.length === 0) return;
 
-  const totalAmount = cartItems.reduce((sum, item) => sum + item.total, 0);
+    const totalAmount = cartItems.reduce((sum, item) => sum + item.total, 0);
 
-  const orderItems: OrderItem[] = cartItems.map((item) => ({
-    productId: item.productId,
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity,
-    image: item.imageUrl,
-  }));
+    const orderItems: OrderItem[] = cartItems.map((item) => ({
+      productId: item.productId,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.imageUrl,
+    }));
 
-  try {
-    // ⬅️ احفظ الطلب واحصل على الـ orderId من Firebase
-    const orderId = await saveOrder({
-      items: orderItems,
-      totalAmount,
-      createdAt: Timestamp.now(),
-      status: "pending",
-      customerPhone,
-      deliveryAddress,
-    });
-
-    // Clear cart and close drawer
-    setCartItems([]);
-    setIsCartOpen(false);
-
-    // Show success message
-    setSuccessMessage(
-      `تم استلام طلبك بنجاح! سيتواصل معك فريقنا على الرقم ${customerPhone}`
-    );
-    setTimeout(() => setSuccessMessage(null), 5000);
-
-    // Redirect to WhatsApp with order details + orderId
-    setTimeout(() => {
-      sendOrderToWhatsApp(
-        orderItems,
+    try {
+      // ⬅️ احفظ الطلب واحصل على الـ orderId من Firebase
+      const orderId = await saveOrder({
+        items: orderItems,
         totalAmount,
+        createdAt: Timestamp.now(),
+        status: "pending",
         customerPhone,
         deliveryAddress,
-        orderId // ⬅️ تمرير الـ Order ID هنا
-      );
-    }, 1200);
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      console.debug("Order save was aborted (expected on unmount)");
-      return;
-    }
-    console.error("Error saving order:", error);
-    setSuccessMessage("حدث خطأ في حفظ الطلب. يرجى المحاولة مجددًا.");
-    setTimeout(() => setSuccessMessage(null), 5000);
-  }
-};
+      });
 
+      // Clear cart and close drawer
+      setCartItems([]);
+      setIsCartOpen(false);
+
+      // Show success message
+      setSuccessMessage(
+        `تم استلام طلبك بنجاح! سيتواصل معك فريقنا على الرقم ${customerPhone}`
+      );
+      setTimeout(() => setSuccessMessage(null), 5000);
+
+      // Redirect to WhatsApp with order details + orderId
+      setTimeout(() => {
+        sendOrderToWhatsApp(
+          orderItems,
+          totalAmount,
+          customerPhone,
+          deliveryAddress,
+          orderId // ⬅️ تمرير الـ Order ID هنا
+        );
+      }, 1200);
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        console.debug("Order save was aborted (expected on unmount)");
+        return;
+      }
+      console.error("Error saving order:", error);
+      setSuccessMessage("حدث خطأ في حفظ الطلب. يرجى المحاولة مجددًا.");
+      setTimeout(() => setSuccessMessage(null), 5000);
+    }
+  };
 
   // Handle WhatsApp button in hero
   const handleWhatsAppClick = () => {
@@ -227,19 +250,11 @@ export default function HomePage() {
         title={theme === "oliva-light" ? "المظهر الداكن" : "المظهر الفاتح"}
       >
         {theme === "oliva-light" ? (
-          <svg
-            className="w-7 h-7"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
           </svg>
         ) : (
-          <svg
-            className="w-7 h-7"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.121-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM7 11a1 1 0 100-2H6a1 1 0 100 2h1zm-2.464-7.464a1 1 0 011.414 0l.707.707A1 1 0 006.243 5.05l-.707-.707a1 1 0 010-1.414zM19 11a1 1 0 100-2h-1a1 1 0 100 2h1zm0 4a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM2 14a1 1 0 001 1h1a1 1 0 100-2H3a1 1 0 00-1 1zm8 5a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zM5.757 5.757a1 1 0 000-1.414L5.05 3.636a1 1 0 00-1.414 1.414l.707.707zm9.899 9.899l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 101.414-1.414z"
@@ -279,8 +294,8 @@ export default function HomePage() {
 
           {/* Category Filter */}
           {categories.length > 0 && (
-            <div  className="categories-filter mb-12">
-              <div className="categories-scroll overflow-x-auto pb-2 sm:pr-10 pr-40 flex gap-3 justify-center">
+            <div className="categories-filter mb-12">
+              <div className="categories-scroll overflow-x-auto pb-2 sm:pr-10 pr-4 flex gap-3 justify-center">
                 <CategoryChip
                   name="جميع المنتجات"
                   isActive={selectedCategory === "all"}
@@ -311,10 +326,7 @@ export default function HomePage() {
               </p>
             </div>
           ) : (
-            <div
-              
-              className="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            >
+            <div className="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.map((product) => (
                 <ProductCard
                   key={product.id}
@@ -333,7 +345,10 @@ export default function HomePage() {
       <button
         onClick={() => setIsCartOpen(true)}
         className="fixed bottom-6 left-6 btn btn-circle btn-primary btn-lg shadow-2xl z-20 flex items-center justify-center"
-        aria-label={`السلة (${cartItems.reduce((sum, item) => sum + item.quantity, 0)} عنصر)`}
+        aria-label={`السلة (${cartItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        )} عنصر)`}
       >
         <span className="text-2xl">🛒</span>
         {cartItems.length > 0 && (
@@ -355,7 +370,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <Footer />
-      
+
       {/* Back to Top Button */}
       <BackToTop />
     </div>

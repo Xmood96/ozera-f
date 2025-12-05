@@ -19,7 +19,9 @@ export function generateOrderMessage(
   const itemsList = items
     .map(
       (item) =>
-        `• *${item.name}*\n  الكمية: ${item.quantity}\n  السعر: ${item.price * item.quantity} ج.م`
+        `• *${item.name}*\n  الكمية: ${item.quantity}\n  السعر: ${
+          item.price * item.quantity
+        } ج.م`
     )
     .join("\n\n");
 
@@ -46,22 +48,27 @@ ${itemsList}
   return message;
 }
 
-
 /**
  * Redirect to WhatsApp with order message
  * @param message - Message to send
  * @param adminPhoneNumber - Admin phone number to send message to (format: 20XXXXXXXXXX)
  */
-export function redirectToWhatsApp(message: string, adminPhoneNumber: string = "209546481125"): void {
+export function redirectToWhatsApp(
+  message: string,
+  adminPhoneNumber: string = "209546481125"
+): void {
   // Ensure phone number format (remove + if present, keep only digits)
   const formattedPhone = adminPhoneNumber.replace(/\D/g, "");
 
   // WhatsApp Web API link
-  const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(
+    message
+  )}`;
 
   // Detect if running on iOS Safari
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  const isSafari =
+    /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
   const isIOSSafari = isIOS && isSafari;
 
   // Use location.href for iOS Safari (more reliable), window.open for others
@@ -89,8 +96,14 @@ export function sendOrderToWhatsApp(
   customerPhone: string,
   deliveryAddress: string,
   orderId: string,
-  adminPhoneNumber: string = "966546481125"
+  adminPhoneNumber: string = "201271772724"
 ): void {
-  const message = generateOrderMessage(items, totalAmount, customerPhone, deliveryAddress, orderId);
+  const message = generateOrderMessage(
+    items,
+    totalAmount,
+    customerPhone,
+    deliveryAddress,
+    orderId
+  );
   redirectToWhatsApp(message, adminPhoneNumber);
 }
